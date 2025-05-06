@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Превью нового элемента оплаты частями</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .product-card {
+            max-width: 400px;
+            padding: 20px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .price-container {
+            margin-bottom: 15px;
+        }
+        
+        .old-price {
+            color: #666;
+            text-decoration: line-through;
+            font-size: 16px;
+        }
+        
+        .discount {
+            color: #e42626;
+            margin-left: 8px;
+        }
+        
+        .current-price {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e42626;
+            margin: 5px 0 15px;
+        }
+        
+        .delivery-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .delivery-option i {
+            margin-right: 10px;
+            color: #333;
+        }
+        
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #e42626;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        
+        /* Новый стиль для блока оплаты частями в синих тонах */
+        .installment-payment-container {
+            margin: 10px 0;
+        }
+        
+        .installment-payment-block {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: #e8f4ff; /* Светло-голубой фон */
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 10px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+        
+        .installment-payment-block:hover {
+            background-color: #d6ebff;
+        }
+        
+        .installment-icon {
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            background-color: #0066cc; /* Синий цвет иконки */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+        }
+        
+        .installment-info {
+            flex-grow: 1;
+        }
+        
+        .installment-title {
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .installment-highlight {
+            font-weight: bold;
+            color: #0066cc; /* Синий цвет выделения */
+        }
+        
+        .installment-monthly {
+            font-size: 12px;
+            color: #555;
+        }
+        
+        .installment-arrow {
+            margin-left: 10px;
+            font-size: 18px;
+            color: #0066cc; /* Синий цвет стрелки */
+        }
+    </style>
+</head>
+<body>
+    <div class="product-card">
+        <div class="price-container">
+            <span class="old-price">560,75 р.</span>
+            <span class="discount">-10%</span>
+            <div class="current-price">501,45 р.</div>
+        </div>
+        
+        <div class="delivery-option">
+            <i>🚚</i> Самовывоз сегодня
+        </div>
+        <div class="delivery-option">
+            <i>🚚</i> Доставка завтра
+        </div>
+        <div class="delivery-option">
+            <i>📧</i> Email
+        </div>
+        
+        <button class="add-to-cart-btn">В корзину</button>
+        
+        <!-- Новый блок оплаты частями с динамическим расчетом -->
+        <div class="installment-payment-container">
+            <div class="installment-payment-block">
+                <div class="installment-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="installment-info">
+                    <div class="installment-title">
+                        Оплата частями: <span class="installment-highlight">0 р. сегодня</span>
+                    </div>
+                    <div class="installment-monthly">
+                        От 10,44 р. в месяц потом
+                    </div>
+                </div>
+                <div class="installment-arrow">
+                    &rsaquo;
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Функция для расчета и обновления отображения минимального ежемесячного платежа
+        function updateMonthlyPayment() {
+            const productPrice = 501.45; // Текущая цена товара
+            const maxPeriod = 48; // Максимальный период в месяцах
+            
+            // Расчет минимального ежемесячного платежа
+            const minMonthlyPayment = productPrice / maxPeriod;
+            
+            // Форматирование для отображения
+            const formattedPayment = minMonthlyPayment.toFixed(2).replace('.', ',');
+            
+            // Обновление текста на странице
+            document.querySelector('.installment-monthly').textContent = 
+                `От ${formattedPayment} р. в месяц потом`;
+        }
+        
+        // Вызов функции при загрузке страницы
+        window.addEventListener('DOMContentLoaded', updateMonthlyPayment);
+    </script>
+</body>
+</html>

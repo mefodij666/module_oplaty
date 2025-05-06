@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Модуль оплаты частями - bitrix/modules/installment.payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #085cfc;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 25px;
+        }
+        p {
+            margin: 15px 0;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .note {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffca28;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .feature {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Модуль оплаты частями - installment.payment</h1>
+    
+    <p>Разработан модуль для 1С-Битрикс, который добавляет функционал оплаты частями на страницы продуктов интернет-магазина. Модуль включает в себя стилизованную кнопку "Оплата частями: 0 руб. сегодня" и интерактивное модальное окно с настраиваемыми параметрами платежа.</p>
+    
+    <h2>Основные функции и возможности</h2>
+    <ul>
+        <li><strong>Компонент кнопки оплаты частями</strong> - стилизованный блок с иконкой часов и информацией о минимальном платеже.</li>
+        <li><strong>Модальное окно с интерактивными слайдерами</strong> для выбора первоначального платежа (0-50%) и срока рассрочки (2-48 месяцев).</li>
+        <li><strong>Динамический расчёт платежей</strong> в реальном времени при перемещении слайдеров.</li>
+        <li><strong>Настраиваемые проценты наценки</strong> для разных сроков рассрочки через административный интерфейс.</li>
+        <li><strong>Индикация переплаты</strong> с использованием тильды (~) перед суммой ежемесячного платежа при наличии наценки.</li>
+        <li><strong>Эффект ряби (ripple effect)</strong> при клике на кнопки, соответствующий дизайну сайта.</li>
+        <li><strong>Адаптивный дизайн</strong>, соответствующий стилю шаблона Aspro Lite.</li>
+    </ul>
+    
+    <h2>Исправленные ошибки</h2>
+    <ul>
+        <li><strong>Закрытие модального окна при перетаскивании ползунка</strong> - исправлена проблема, когда при перетаскивании ползунка за пределы модального окна оно закрывалось.</li>
+        <li><strong>Центрирование модального окна</strong> - обеспечено корректное центрирование модального окна на экране при открытии.</li>
+        <li><strong>Выравнивание значений под слайдерами</strong> - обеспечено точное выравнивание значений под слайдерами с ручками слайдеров.</li>
+        <li><strong>Стилизация ручки слайдера</strong> - добавлены cursor: grab/grabbing при взаимодействии с ползунком.</li>
+    </ul>
+    
+    <div class="note">
+        <strong>Примечание:</strong> Для корректной работы модуля требуется библиотека noUiSlider, которая включена в комплект модуля.
+    </div>
+    
+    <h2>Структура файлов модуля</h2>
+    <pre>
+bitrix/modules/installment.payment/
+├── include.php
+├── install/
+│   ├── admin/
+│   │   ├── installment_payment_settings.php
+│   │   └── menu.php
+│   ├── components/
+│   │   ├── installment/
+│   │   │   ├── payment.button/
+│   │   │   │   ├── component.php
+│   │   │   │   └── templates/
+│   │   │   │       └── .default/
+│   │   │   │           ├── script.js
+│   │   │   │           ├── style.css
+│   │   │   │           └── template.php
+│   │   │   └── payment.modal/
+│   │   │       ├── component.php
+│   │   │       └── templates/
+│   │   │           └── .default/
+│   │   │               ├── script.js
+│   │   │               ├── style.css
+│   │   │               └── template.php
+│   ├── css/
+│   │   └── installment.payment/
+│   │       └── style.css
+│   ├── js/
+│   │   └── installment.payment/
+│   │       ├── installment.js
+│   │       ├── nouislider.min.css
+│   │       └── nouislider.min.js
+│   └── index.php
+├── lib/
+│   ├── calculator.php
+│   └── helper.php
+└── options.php
+    </pre>
+    
+    <h2>Инструкция по установке</h2>
+    <ol>
+        <li>Скопируйте файлы модуля в директорию <code>/bitrix/modules/installment.payment/</code> вашего сайта.</li>
+        <li>Перейдите в административную панель в раздел "Marketplace > Установленные решения".</li>
+        <li>Найдите модуль "Оплата частями" в списке и нажмите "Установить".</li>
+        <li>После установки модуля перейдите в "Настройки > Настройки продукта > Модули" и убедитесь, что модуль активирован.</li>
+        <li>Настройте проценты наценки для разных сроков рассрочки в разделе "Настройки > Настройки модулей > Оплата частями".</li>
+        <li>Добавьте компонент <code>installment:payment.button</code> в шаблон страницы товара, непосредственно после кнопки "Купить в 1 клик".</li>
+    </ol>
+    
+    <div class="feature">
+        <strong>Особенности интеграции с Aspro Lite:</strong>
+        <p>При интеграции с шаблоном Aspro Lite рекомендуется разместить компонент в файле <code>/bitrix/templates/aspro-lite/components/bitrix/catalog.element/.default/template.php</code> в блоке кнопок покупки товара, непосредственно после кнопки "Купить в 1 клик".</p>
+    </div>
+    
+    <h2>Пример использования компонента на странице товара</h2>
+    <pre>
+&lt;?$APPLICATION->IncludeComponent(
+    "installment:payment.button",
+    "",
+    Array(
+        "PRODUCT_ID" => $arResult["ID"],
+        "PRODUCT_PRICE" => $arResult["MIN_PRICE"]["DISCOUNT_VALUE"],
+        "PRODUCT_NAME" => $arResult["NAME"],
+        "PRODUCT_IMAGE" => $arResult["DETAIL_PICTURE"]["SRC"],
+        "DETAILS_LINK" => "/installment-info/"
+    )
+);?&gt;
+    </pre>
+    
+    <p>Модуль успешно разработан и готов к использованию в интернет-магазине на базе 1С-Битрикс с шаблоном Aspro Lite.</p>
+</body>
+</html>

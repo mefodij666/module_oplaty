@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Демонстрация интеграции</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js"></script>
+    <style>
+        :root {
+            --main-blue: #085cfc;
+            --light-blue: rgba(8, 92, 252, 0.1);
+            --hover-blue: #0046c7;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        
+        .product-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        
+        .product-container {
+            display: flex;
+            margin-bottom: 30px;
+        }
+        
+        .product-gallery {
+            width: 50%;
+            padding-right: 20px;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .product-info {
+            width: 50%;
+            padding-left: 20px;
+        }
+        
+        .product-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 20px 0;
+            color: #333;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-cart {
+            background-color: var(--main-blue);
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-cart:hover {
+            background-color: var(--hover-blue);
+        }
+        
+        .btn-one-click {
+            background-color: var(--light-blue);
+            color: var(--main-blue);
+            border: none;
+            padding: 13px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-one-click:hover {
+            background-color: rgba(8, 92, 252, 0.15);
+        }
+        
+        /* Стили для компонента кнопки оплаты частями */
+        .installment-payment-block {
+            display: flex;
+            align-items: center;
+            padding: 13px 15px;
+            background-color: rgba(8, 92, 252, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+            -webkit-transform: translate3d(0,0,0);
+            -o-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .installment-payment-block:hover {
+            background-color: rgba(8, 92, 252, 0.15);
+        }
+
+        .installment-icon {
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            background-color: #085cfc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+        }
+
+        .installment-info {
+            flex-grow: 1;
+        }
+
+        .installment-title {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .installment-highlight {
+            font-weight: 600;
+            color: #085cfc;
+        }
+
+        .installment-monthly {
+            font-size: 12px;
+            color: #71717a;
+        }
+
+        .installment-arrow {
+            margin-left: 10px;
+            font-size: 18px;
+            color: #085cfc;
+        }
+        
+        /* Эффект ряби (ripple) */
+        .has-ripple {
+            position: relative;
+            overflow: hidden;
+            -webkit-transform: translate3d(0,0,0);
+            -o-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
+        }
+
+        .ripple {
+            display: block;
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            -webkit-transform: scale(0);
+            -o-transform: scale(0);
+            transform: scale(0);
+            background: #fff;
+            opacity: 1;
+        }
+
+        .ripple-animate {
+            -webkit-animation: ripple;
+            -o-animation: ripple;
+            animation: ripple;
+        }
+
+        @-webkit-keyframes ripple {
+            100% {
+                opacity: 0;
+                -webkit-transform: scale(2);
+                transform: scale(2);
+            }
+        }
+
+        @-o-keyframes ripple {
+            100% {
+                opacity: 0;
+                -o-transform: scale(2);
+                transform: scale(2);
+            }
+        }
+
+        @keyframes ripple {
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+        
+        /* Модальное окно */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .installment-modal {
+            background-color: #fff;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            animation: fromBottomEnterModalAnimation 300ms ease;
+            margin: auto;
+            position: relative;
+        }
+
+        .installment-content {
+            padding: 0;
+        }
+
+        .installment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .installment-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .installment-close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            color: #888;
+            padding: 0;
+        }
+
+        .installment-modal-body {
+            padding: 20px;
+        }
+
+        .installment-product {
+            margin-bottom: 20px;
+        }
+
+        .installment-product-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .installment-product-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .installment-product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .installment-sliders {
+            margin-bottom: 20px;
+        }
+
+        .installment-slider-wrapper {
+            margin-bottom: 25px;
+        }
+
+        .installment-slider-label {
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .installment-slider {
+            height: 6px;
+            margin-bottom: 10px;
+        }
+
+        .installment-slider .noUi-handle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #085cfc;
+            box-shadow: none;
+            border: none;
+            top: -8px;
+            right: -10px !important;
+            cursor: grab;
+        }
+
+        .installment-slider .noUi-handle:active {
+            cursor: grabbing;
+        }
+
+        .installment-slider .noUi-handle:before, 
+        .installment-slider .noUi-handle:after {
+            display: none;
+        }
+
+        .installment-slider .noUi-connect {
+            background-color: #085cfc;
+        }
+
+        .installment-slider-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .installment-slider-value {
+            cursor: pointer;
+            padding: 3px 5px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .installment-slider-value:hover {
+            background-color: rgba(8, 92, 252, 0.1);
+        }
+
+        .installment-slider-value.active {
+            color: #085cfc;
+            font-weight: 500;
+        }
+
+        .installment-calculations {
+            background-color: #f5f7fb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .installment-payment-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .installment-payment-row:last-child {
+            margin-bottom: 8px;
+        }
+
+        .installment-payment-label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .installment-payment-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .installment-note {
+            font-size: 12px;
+            color: #00a046;
+            text-align: right;
+        }
+
+        .installment-how-it-works {
+            margin-bottom: 20px;
+        }
+
+        .installment-how-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .installment-how-items {
+            margin-bottom: 10px;
+        }
+
+        .installment-how-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .installment-how-icon {
+            color: #00a046;
+            margin-right: 10px;
+            font-weight: 700;
+        }
+
+        .installment-how-text {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .installment-more-details {
+            font-size: 13px;
+            color: #085cfc;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .installment-more-details:hover {
+            text-decoration: underline;
+        }
+
+        .installment-add-to-cart {
+            background-color: #085cfc;
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .installment-add-to-cart:hover {
+            background-color: #0046c7;
+        }
+
+        @keyframes fromBottomEnterModalAnimation {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="product-page">
+        <div class="product-container">
+            <div class="product-gallery">
+                <img src="https://amoto.by/upload/iblock/5f1/90jxagn57mv24vkths7kxhg6mbf4x8fn/palma_250_se_blue.jpg" alt="PROGASI Palma 250" class="product-image">
+            </div>
+            <div class="product-info">
+                <h1 class="product-title">PROGASI Palma 250</h1>
+                <div class="product-price">6 500 руб.</div>
+                <div class="action-buttons">
+                    <button class="btn-cart has-ripple">В корзину</button>
+                    <button class="btn-one-click has-ripple">Купить в 1 клик</button>
+                    
+                    <!-- Интеграция блока оплаты частями -->
+                    <div class="installment-payment-block has-ripple" id="openModalBtn">
+                        <div class="installment-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="installment-info">
+                            <div class="installment-title">
+                                Оплата частями: <span class="installment-highlight">0 руб. сегодня</span>
+                            </div>
+                            <div class="installment-monthly">
+                                От 135,42 р. в месяц потом
+                            </div>
+                        </div>
+                        <div class="installment-arrow">
+                            &rsaquo;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно оплаты частями -->
+    <div class="modal-overlay" id="installmentModal">
+        <div class="installment-modal">
+            <div class="installment-content">
+                <div class="installment-header">
+                    <h4 class="installment-title" id="installment-modal-title">Оплата частями</h4>
+                    <button type="button" class="installment-close-button" id="closeModal">&times;</button>
+                </div>
+                <div class="installment-wrapper">
+                    <!-- Содержимое модального окна -->
+                    <div class="installment-modal-body">
+                        <div class="installment-product">
+                            <div class="installment-product-info">
+                                <div class="installment-product-name">PROGASI Palma 250</div>
+                                <div class="installment-product-price">6 500 руб.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="installment-sliders">
+                            <div class="installment-slider-wrapper">
+                                <div class="installment-slider-label">Первый платеж</div>
+                                <div class="installment-slider" id="initial-payment-slider"></div>
+                                <div class="installment-slider-values" id="initial-payment-values"></div>
+                            </div>
+                            
+                            <div class="installment-slider-wrapper">
+                                <div class="installment-slider-label">Срок рассрочки</div>
+                                <div class="installment-slider" id="period-slider"></div>
+                                <div class="installment-slider-values" id="period-values"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="installment-calculations">
+                            <div class="installment-payment-row">
+                                <div class="installment-payment-label">Сегодня</div>
+                                <div class="installment-payment-value" id="today-payment">0 руб.</div>
+                            </div>
+                            <div class="installment-payment-row">
+                                <div class="installment-payment-label">Ежемесячный платеж</div>
+                                <div class="installment-payment-value" id="monthly-payment">~541,67 руб.</div>
+                            </div>
+                            <div class="installment-payment-row">
+                                <div class="installment-payment-label">Стоимость товара</div>
+                                <div class="installment-payment-value" id="product-price">6 500 руб.</div>
+                            </div>
+                            <div class="installment-payment-row">
+                                <div class="installment-payment-label">Стоимость с рассрочкой</div>
+                                <div class="installment-payment-value" id="total-price">6 500 руб.</div>
+                            </div>
+                            <div class="installment-note" id="installment-note">Без переплаты</div>
+                        </div>
+                        
+                        <div class="installment-how-it-works">
+                            <div class="installment-how-title">Как это работает</div>
+                            <div class="installment-how-items">
+                                <div class="installment-how-item">
+                                    <div class="installment-how-icon">✓</div>
+                                    <div class="installment-how-text">Первый платеж сегодня</div>
+                                </div>
+                                <div class="installment-how-item">
+                                    <div class="installment-how-icon">✓</div>
+                                    <div class="installment-how-text">Остальные платежи ежемесячно</div>
+                                </div>
+                                <div class="installment-how-item">
+                                    <div class="installment-how-icon">✓</div>
+                                    <div class="installment-how-text">Никаких скрытых комиссий</div>
+                                </div>
+                            </div>
+                            <a href="#" class="installment-more-details">Подробнее о рассрочке</a>
+                        </div>
+                        
+                        <button class="installment-add-to-cart has-ripple" id="installment-add-to-cart">Добавить в корзину</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Инициализация эффекта ряби для кнопок
+        document.addEventListener('DOMContentLoaded', function() {
+            var rippleElements = document.querySelectorAll('.has-ripple');
+            
+            rippleElements.forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    var duration = 0.6;
+                    
+                    var rect = element.getBoundingClientRect(),
+                        left = e.clientX - rect.left,
+                        top = e.clientY - rect.top,
+                        width = element.offsetWidth,
+                        height = element.offsetHeight,
+                        dx = left > width / 2 ? left : width - left,
+                        dy = top > height / 2 ? top : height - top,
+                        maxX = Math.max(dx, width - dx),
+                        maxY = Math.max(dy, height - dy),
+                        radius = Math.sqrt(maxX * maxX + maxY * maxY),
+                        ripple = document.createElement('span'),
+                        style = 'width: ' + (radius * 2) + 'px; height: ' + (radius * 2) + 'px; top: ' + (top - radius) + 'px; left: ' + (left - radius) + 'px;';
+                    
+                    ripple.className = 'ripple';
+                    ripple.setAttribute('style', style);
+                    element.appendChild(ripple);
+                    
+                    setTimeout(function() {
+                        ripple.classList.add('ripple-animate');
+                        
+                        setTimeout(function() {
+                            if (element.contains(ripple)) {
+                                element.removeChild(ripple);
+                            }
+                        }, duration * 1000);
+                    }, 0);
+                });
+            });
+            
+            // Модальное окно оплаты частями
+            var openModalBtn = document.getElementById('openModalBtn');
+            var installmentModal = document.getElementById('installmentModal');
+            var closeModal = document.getElementById('closeModal');
+            var isMouseDown = false;
+            var isInsideModal = false;
+            
+            if (openModalBtn && installmentModal) {
+                openModalBtn.addEventListener('click', function() {
+                    installmentModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            if (closeModal) {
+                closeModal.addEventListener('click', function() {
+                    installmentModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            // Закрытие по клику на фон
+            if (installmentModal) {
+                installmentModal.addEventListener('mousedown', function(event) {
+                    isMouseDown = true;
+                    
+                    var modalContent = document.querySelector('.installment-modal');
+                    if (modalContent && modalContent.contains(event.target)) {
+                        isInsideModal = true;
+                    } else {
+                        isInsideModal = false;
+                    }
+                });
+                
+                document.addEventListener('mouseup', function(event) {
+                    if (isMouseDown) {
+                        isMouseDown = false;
+                        
+                        if (!isInsideModal && installmentModal.style.display === 'flex') {
+                            var modalContent = document.querySelector('.installment-modal');
+                            if (modalContent && !modalContent.contains(event.target)) {
+                                installmentModal.style.display = 'none';
+                                document.body.style.overflow = '';
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

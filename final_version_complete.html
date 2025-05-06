@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROGASI Palma 250 - АМОТО в Минске</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js"></script>
+    <style>
+        :root {
+            /* Основные цвета */
+            --main-blue: #085cfc;  /* Ваш фирменный синий цвет вместо фиолетового */
+            --light-blue: rgba(8, 92, 252, 0.1); /* Light blue background */
+            --hover-blue: #0046c7;
+            --border-color: #e5e5e5;
+            --text-color: #28282c;
+            --text-gray: #71717a;
+            --background-gray: #f5f5f7;
+            --divider-color: #ececf0;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            color: var(--text-color);
+            background-color: var(--background-gray);
+            line-height: 1.5;
+        }
+        
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .product-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .product-price {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        /* Блок оплаты частями - кнопка */
+        .installment-payment-block {
+            display: flex;
+            align-items: center;
+            padding: 13px 15px;
+            background-color: var(--light-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 15px;
+        }
+        
+        .installment-payment-block:hover {
+            background-color: rgba(8, 92, 252, 0.15);
+        }
+        
+        .installment-icon {
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            background-color: var(--main-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+        }
+        
+        .installment-info {
+            flex-grow: 1;
+        }
+        
+        .installment-title {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .installment-highlight {
+            font-weight: 600;
+            color: var(--main-blue);
+        }
+        
+        .installment-monthly {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+        
+        .installment-arrow {
+            margin-left: 10px;
+            font-size: 18px;
+            color: var(--main-blue);
+        }
+        
+        /* Модальное окно - в точности как на скриншоте */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .installment-modal {
+            background-color: #fff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            animation: fromBottomEnterModalAnimation 300ms ease;
+        }
+        
+        @keyframes fromBottomEnterModalAnimation {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .installment-content {
+            position: relative;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--divider-color);
+        }
+        
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-color);
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            color: #71717a;
+            cursor: pointer;
+            padding: 0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .installment-wrapper {
+            padding: 20px;
+        }
+        
+        .installment-block {
+            margin-bottom: 20px;
+        }
+        
+        .installment-block:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Стиль для блока с изображением товара */
+        .installment-offer {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .installment-image {
+            width: 64px;
+            height: 85px;
+            object-fit: contain;
+            margin-right: 15px;
+            border-radius: 4px;
+        }
+        
+        .installment-offer-name {
+            font-size: 14px;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            margin-right: 10px;
+        }
+        
+        .installment-line {
+            height: 1px;
+            background-color: var(--divider-color);
+            margin: 16px 0;
+        }
+        
+        .installment-first-payment {
+            margin-bottom: 15px;
+        }
+        
+        .installment-first-payment-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .installment-first-payment-label {
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+        
+        .installment-first-payment-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--main-blue);
+        }
+        
+        .installment-period-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .installment-period-label {
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+        
+        .installment-period-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--main-blue);
+        }
+        
+        /* Стиль для ползунка */
+        .installment-range {
+            position: relative;
+            margin: 20px 0 15px;
+            height: 4px;
+        }
+        
+        /* Настройка стилей noUiSlider */
+        .noUi-target {
+            height: 4px;
+            border-radius: 2px;
+            border: none;
+            box-shadow: none;
+            background-color: #d8d8dd;
+        }
+        
+        .noUi-connect {
+            background-color: var(--main-blue);
+        }
+        
+        .noUi-horizontal .noUi-handle {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: var(--main-blue);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border: 2px solid white;
+            top: -7px;
+            right: -9px !important;
+            cursor: grab;
+            transition: transform 0.1s;
+        }
+        
+        .noUi-horizontal .noUi-handle:active {
+            cursor: grabbing !important;
+            transform: scale(0.95);
+        }
+        
+        .noUi-handle:before, 
+        .noUi-handle:after {
+            display: none;
+        }
+        
+        /* Скрываем стандартные пипсы noUiSlider */
+        .noUi-pips {
+            display: none;
+        }
+        
+        /* Месяцы и значения первого платежа под слайдерами */
+        .installment-values {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); /* Для первого платежа 6 значений */
+            margin-top: 10px;
+            height: 20px; /* Фиксированная высота для выравнивания */
+        }
+        
+        .installment-values.period-values {
+            grid-template-columns: repeat(10, 1fr); /* Для периодов 10 значений */
+        }
+        
+        .installment-value {
+            font-size: 12px;
+            color: var(--text-gray);
+            cursor: pointer;
+            position: absolute;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        
+        .installment-value-active {
+            color: var(--main-blue);
+            font-weight: 500;
+        }
+        
+        /* Инфо о платежах */
+        .installment-pay-today-text {
+            display: block;
+            font-size: 14px;
+            color: var(--main-blue);
+            margin-bottom: 4px;
+        }
+        
+        .installment-pay-today-price {
+            display: block;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--main-blue);
+            margin-bottom: 8px;
+        }
+        
+        .installment-pay-month-text {
+            display: block;
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 4px;
+        }
+        
+        .installment-pay-month-price {
+            margin-bottom: 16px;
+        }
+        
+        .installment-pay-month-price-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .installment-no-markup {
+            font-size: 14px;
+            color: var(--main-blue);
+            display: block;
+            margin-top: 4px;
+        }
+        
+        /* Сравнение цен */
+        .installment-prices {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .installment-prices-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .installment-prices-title {
+            color: var(--text-gray);
+        }
+        
+        /* Кнопка добавления в корзину */
+        .installment-add {
+            margin-bottom: 20px;
+        }
+        
+        .installment-add-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: var(--main-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .installment-add-button:hover {
+            background-color: var(--hover-blue);
+        }
+        
+        /* Как это работает */
+        .installment-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .installment-heading-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .installment-heading-more {
+            font-size: 14px;
+            color: var(--main-blue);
+            text-decoration: none;
+        }
+        
+        .installment-info {
+            margin-bottom: 16px;
+        }
+        
+        .installment-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+        
+        .installment-info-icon {
+            color: var(--main-blue);
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        .installment-notice {
+            display: block;
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="product-card">
+            <div class="product-price">6 500 руб.</div>
+            
+            <div class="product-action">
+                <button class="btn" style="display: block; width: 100%; padding: 13px 0; background-color: var(--main-blue); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; text-align: center;">В корзину</button>
+                <button class="btn" style="display: block; width: 100%; padding: 13px 0; background-color: var(--light-blue); color: var(--main-blue); border: none; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; text-align: center; margin-top: 10px;">Купить в 1 клик</button>
+                
+                <!-- Блок оплаты частями -->
+                <div class="installment-payment-block" id="openModalBtn">
+                    <div class="installment-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="installment-info">
+                        <div class="installment-title">
+                            Оплата частями: <span class="installment-highlight">0 руб. сегодня</span>
+                        </div>
+                        <div class="installment-monthly">
+                            От 135,42 руб. в месяц потом
+                        </div>
+                    </div>
+                    <div class="installment-arrow">
+                        &rsaquo;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно оплаты частями - максимально приближено к оригиналу -->
+    <div class="modal-overlay" id="installmentModal">
+        <div class="installment-modal">
+            <div class="installment-content">
+                <div class="header">
+                    <h4 class="title" id="installment-modal-title">Оплата частями</h4>
+                    <button type="button" class="close-button" id="closeModal">&times;</button>
+                </div>
+                <div class="installment-wrapper">
+                    <!-- Первый блок: информация о товаре -->
+                    <div class="installment-block">
+                        <div class="installment-offer">
+                            <img src="https://amoto.by/upload/iblock/5f1/90jxagn57mv24vkths7kxhg6mbf4x8fn/palma_250_se_blue.jpg" alt="PROGASI Palma 250" class="installment-image">
+                            <a href="#" class="installment-offer-name">PROGASI Palma 250</a>
+                        </div>
+                        <div class="installment-line"></div>
+                        
+                        <!-- Первоначальный платеж (первый ползунок) -->
+                        <div class="installment-first-payment">
+                            <div class="installment-first-payment-text">
+                                <span class="installment-first-payment-label">Первоначальный платеж:</span>
+                                <span class="installment-first-payment-value" id="initialPaymentText">0%</span>
+                            </div>
+                            <div class="installment-range">
+                                <div id="initialPaymentSlider"></div>
+                            </div>
+                            <div class="installment-values" id="initialPaymentValues">
+                                <!-- Значения будут добавлены через JavaScript для точного позиционирования -->
+                            </div>
+                        </div>
+                        
+                        <!-- Период оплаты (второй ползунок) -->
+                        <div class="installment-period-text">
+                            <span class="installment-period-label">Период оплаты:</span>
+                            <span class="installment-period-value" id="periodTextValue">6 месяцев</span>
+                        </div>
+                        <div class="installment-range">
+                            <div id="periodSlider"></div>
+                        </div>
+                        
+                        <!-- Значения месяцев под слайдером -->
+                        <div class="installment-values period-values" id="periodValues">
+                            <!-- Значения будут добавлены через JavaScript для точного позиционирования -->
+                        </div>
+                    </div>
+                    
+                    <!-- Второй блок: информация о платежах -->
+                    <div class="installment-block">
+                        <span class="installment-pay-today-text">Оплата сегодня</span>
+                        <span class="installment-pay-today-price" id="todayPayment">0 р.</span>
+                        <span class="installment-pay-month-text">Далее <span id="monthlyPaymentCount">6</span> ежемесячных платежей</span>
+                        <div class="installment-pay-month-price">
+                            <span class="installment-pay-month-price-value" id="monthlyPayment">1 136,15 р.</span>
+                            <span class="installment-no-markup" id="noMarkupText">без переплат</span>
+                        </div>
+                        
+                        <!-- Сравнение цен -->
+                        <div class="installment-prices">
+                            <div class="installment-prices-item">
+                                <span class="installment-prices-title">Текущая цена</span>
+                                <span id="currentPrice">6 500 руб.</span>
+                            </div>
+                            <div class="installment-prices-item">
+                                <span class="installment-prices-title">Цена при оплате частями</span>
+                                <span id="installmentPrice">6 500 руб.</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Кнопка добавления в корзину -->
+                        <div class="installment-add">
+                            <button type="button" class="installment-add-button" id="addToCartBtn">Добавить в корзину</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Третий блок: как это работает -->
+                    <div class="installment-block">
+                        <div class="installment-heading">
+                            <span class="installment-heading-title">Как это работает?</span>
+                            <a href="#" class="installment-heading-more" id="detailsLink">Подробнее</a>
+                        </div>
+                        <div class="installment-info">
+                            <div class="installment-info-item">
+                                <span class="installment-info-icon">✓</span>
+                                <span>Доступно для заказов от 100 р.</span>
+                            </div>
+                            <div class="installment-info-item">
+                                <span class="installment-info-icon">✓</span>
+                                <span>Без первого взноса</span>
+                            </div>
+                            <div class="installment-info-item">
+                                <span class="installment-info-icon">✓</span>
+                                <span>Без поручителя и справки о доходах</span>
+                            </div>
+                            <div class="installment-info-item">
+                                <span class="installment-info-icon">✓</span>
+                                <span>Ответ от банка в течение 15 минут</span>
+                            </div>
+                            <div class="installment-info-item">
+                                <span class="installment-info-icon">✓</span>
+                                <span>Досрочное погашение без комиссии</span>
+                            </div>
+                        </div>
+                        <span class="installment-notice">При наличии просроченной задолженности в любом банке РБ заявка не может быть одобрена. Расчеты носят ознакомительный характер.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Конфигурация модуля
+            const moduleConfig = {
+                // Базовые настройки
+                detailsLink: 'https://amoto.by/installment-info',
+                minOrderAmount: 100,
+                productPrice: 6500,
+                
+                // Наценки для каждого периода рассрочки (в процентах)
+                // Настройка из админки - для каждого срока можно указать свой процент наценки
+                markupPercentByPeriod: {
+                    2: 0,    // 0% для 2 месяцев
+                    3: 0,    // 0% для 3 месяцев
+                    4: 0,    // 0% для 4 месяцев
+                    5: 0,    // 0% для 5 месяцев
+                    6: 0,    // 0% для 6 месяцев
+                    12: 5,   // 5% для 12 месяцев
+                    18: 7,   // 7% для 18 месяцев
+                    24: 10,  // 10% для 24 месяцев
+                    36: 15,  // 15% для 36 месяцев
+                    48: 20   // 20% для 48 месяцев
+                }
+            };
+            
+            // Элементы для работы с модальным окном
+            const openModalBtn = document.getElementById('openModalBtn');
+            const installmentModal = document.getElementById('installmentModal');
+            const closeModal = document.getElementById('closeModal');
+            const detailsLink = document.getElementById('detailsLink');
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const periodTextValue = document.getElementById('periodTextValue');
+            const initialPaymentText = document.getElementById('initialPaymentText');
+            const todayPayment = document.getElementById('todayPayment');
+            const monthlyPayment = document.getElementById('monthlyPayment');
+            const monthlyPaymentCount = document.getElementById('monthlyPaymentCount');
+            const currentPrice = document.getElementById('currentPrice');
+            const installmentPrice = document.getElementById('installmentPrice');
+            const installmentMonthly = document.querySelector('.installment-monthly');
+            const noMarkupText = document.getElementById('noMarkupText');
+            const initialPaymentValues = document.getElementById('initialPaymentValues');
+            const periodValues = document.getElementById('periodValues');
+            
+            // Устанавливаем ссылку из конфигурации
+            detailsLink.href = moduleConfig.detailsLink;
+            
+            // Открытие модального окна
+            openModalBtn.addEventListener('click', function() {
+                installmentModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // Закрытие модального окна
+            function closeModalWindow() {
+                installmentModal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            closeModal.addEventListener('click', closeModalWindow);
+            
+            // Закрытие модального окна при клике вне его
+            installmentModal.addEventListener('click', function(event) {
+                if (event.target === installmentModal) {
+                    closeModalWindow();
+                }
+            });
+            
+            // Значения для первоначального платежа
+            const initialPaymentPercents = [0, 10, 20, 30, 40, 50];
+            
+            // Функция для создания и позиционирования значений под ползунком первоначального платежа
+            function createInitialPaymentValues() {
+                initialPaymentValues.innerHTML = ''; // Очищаем контейнер
+                
+                initialPaymentPercents.forEach((value, index) => {
+                    const valueElement = document.createElement('span');
+                    valueElement.classList.add('installment-value', 'initial-payment-value');
+                    valueElement.textContent = value + '%';
+                    valueElement.setAttribute('data-value', value);
+                    
+                    // Расчёт позиции в процентах от ширины слайдера
+                    // Для 6 значений: 0% - 0%, 20% - 1/5*100%, 40% - 2/5*100% и т.д.
+                    const position = index / (initialPaymentPercents.length - 1) * 100;
+                    valueElement.style.left = position + '%';
+                    
+                    initialPaymentValues.appendChild(valueElement);
+                    
+                    // Добавляем обработчик клика
+                    valueElement.addEventListener('click', function() {
+                        initialPaymentSlider.noUiSlider.set(value);
+                    });
+                });
+            }
+            
+            // Периоды оплаты в месяцах
+            const periodValues = [2, 3, 4, 5, 6, 12, 18, 24, 36, 48];
+            
+            // Функция для создания и позиционирования значений под ползунком периода оплаты
+            function createPeriodValues() {
+                const periodValuesContainer = document.getElementById('periodValues');
+                periodValuesContainer.innerHTML = ''; // Очищаем контейнер
+                
+                periodValues.forEach((value, index) => {
+                    const valueElement = document.createElement('span');
+                    valueElement.classList.add('installment-value', 'period-value');
+                    valueElement.textContent = value;
+                    valueElement.setAttribute('data-value', index);
+                    
+                    // Расчёт позиции в процентах от ширины слайдера
+                    const position = index / (periodValues.length - 1) * 100;
+                    valueElement.style.left = position + '%';
+                    
+                    periodValuesContainer.appendChild(valueElement);
+                    
+                    // Добавляем обработчик клика
+                    valueElement.addEventListener('click', function() {
+                        periodSlider.noUiSlider.set(index);
+                    });
+                });
+            }
+            
+            // Инициализация слайдера первоначального платежа
+            const initialPaymentSlider = document.getElementById('initialPaymentSlider');
+            noUiSlider.create(initialPaymentSlider, {
+                start: 0,
+                connect: [true, false],
+                step: 10,
+                range: {
+                    'min': 0,
+                    'max': 50
+                }
+            });
+            
+            // Инициализация слайдера периода оплаты
+            const periodSlider = document.getElementById('periodSlider');
+            noUiSlider.create(periodSlider, {
+                start: 4, // Индекс для значения 6 месяцев (по умолчанию)
+                connect: [true, false],
+                step: 1,
+                range: {
+                    'min': 0,
+                    'max': periodValues.length - 1
+                }
+            });
+            
+            // Создаем значения под ползунками
+            createInitialPaymentValues();
+            createPeriodValues();
+            
+            // Обновляем активное состояние значений под ползунками
+            function updateActiveState(sliderType, index) {
+                const valuesSelector = sliderType === 'initial' ? '.initial-payment-value' : '.period-value';
+                const valueElements = document.querySelectorAll(valuesSelector);
+                
+                valueElements.forEach((element, i) => {
+                    if (i === index) {
+                        element.classList.add('installment-value-active');
+                    } else {
+                        element.classList.remove('installment-value-active');
+                    }
+                });
+            }
+            
+            // Обработка перемещения слайдера первоначального платежа
+            initialPaymentSlider.noUiSlider.on('update', function(values) {
+                const value = parseInt(values[0]);
+                
+                // Обновляем текст процента первоначального платежа
+                initialPaymentText.textContent = value + '%';
+                
+                // Обновляем активное состояние значений
+                updateActiveState('initial', value / 10);
+                
+                // Обновляем расчеты платежей
+                updateCalculations();
+            });
+            
+            // Обработка перемещения слайдера периода
+            periodSlider.noUiSlider.on('update', function(values, handle) {
+                const index = Math.round(parseFloat(values[handle]));
+                const period = periodValues[index];
+                
+                // Обновляем текст периода
+                periodTextValue.textContent = period + getPeriodText(period);
+                
+                // Обновляем активное состояние месяцев
+                updateActiveState('period', index);
+                
+                // Обновляем расчеты платежей
+                updateCalculations();
+            });
+            
+            // Функция обновления расчетов
+            function updateCalculations() {
+                // Получаем значения со слайдеров
+                const initialPercent = parseFloat(initialPaymentSlider.noUiSlider.get());
+                const periodIndex = Math.round(parseFloat(periodSlider.noUiSlider.get()));
+                const period = periodValues[periodIndex];
+                
+                // Расчет платежей
+                const initialPaymentAmount = (initialPercent / 100) * moduleConfig.productPrice;
+                const remainingAmount = moduleConfig.productPrice - initialPaymentAmount;
+                
+                // Получаем процент наценки для выбранного периода из настроек
+                const markupPercent = moduleConfig.markupPercentByPeriod[period];
+                
+                // Рассчитываем сумму с наценкой
+                const totalWithMarkup = remainingAmount * (1 + markupPercent / 100);
+                const monthlyAmount = totalWithMarkup / period;
+                const totalPrice = initialPaymentAmount + totalWithMarkup;
+                
+                // Обновление отображения
+                todayPayment.textContent = formatCurrency(initialPaymentAmount, true);
+                
+                // Обновляем текст ежемесячного платежа с тильдой (~) при наличии переплаты
+                if (markupPercent === 0) {
+                    monthlyPayment.textContent = formatCurrency(monthlyAmount, true);
+                    noMarkupText.style.display = 'block';
+                } else {
+                    monthlyPayment.textContent = '~' + formatCurrency(monthlyAmount, true);
+                    noMarkupText.style.display = 'none';
+                }
+                
+                monthlyPaymentCount.textContent = period;
+                currentPrice.textContent = formatCurrency(moduleConfig.productPrice);
+                installmentPrice.textContent = formatCurrency(totalPrice);
+                
+                // Расчет минимального ежемесячного платежа для кнопки
+                const minMonthlyPayment = moduleConfig.productPrice / 48; // 48 месяцев максимальный период
+                installmentMonthly.textContent = 'От ' + formatCurrency(minMonthlyPayment, true) + ' в месяц потом';
+            }
+            
+            // Форматирование валюты
+            function formatCurrency(amount, useRubShort = false) {
+                const formatted = amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ').replace('.00', '').replace('.', ',');
+                return formatted + (useRubShort ? ' р.' : ' руб.');
+            }
+            
+            // Получение склонения для периода
+            function getPeriodText(period) {
+                const lastDigit = period % 10;
+                const lastTwoDigits = period % 100;
+                
+                if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+                    return ' месяцев';
+                }
+                
+                if (lastDigit === 1) {
+                    return ' месяц';
+                }
+                
+                if (lastDigit >= 2 && lastDigit <= 4) {
+                    return ' месяца';
+                }
+                
+                return ' месяцев';
+            }
+            
+            // Инициализация расчетов
+            updateCalculations();
+            
+            // Обработчик для кнопки "Добавить в корзину"
+            addToCartBtn.addEventListener('click', function() {
+                // Получаем выбранные параметры
+                const initialPercent = parseFloat(initialPaymentSlider.noUiSlider.get());
+                const periodIndex = Math.round(parseFloat(periodSlider.noUiSlider.get()));
+                const period = periodValues[periodIndex];
+                
+                // В реальном модуле здесь будет AJAX-запрос
+                console.log('Добавляем товар в корзину с параметрами:', {
+                    productId: 'PROGASI_Palma_250',
+                    initialPayment: initialPercent,
+                    installmentPeriod: period,
+                    markupPercent: moduleConfig.markupPercentByPeriod[period]
+                });
+                
+                alert('Товар добавлен в корзину с параметрами:\n- Первоначальный платеж: ' + initialPercent + 
+                      '%\n- Срок рассрочки: ' + period + getPeriodText(period) + 
+                      '\n- Наценка: ' + moduleConfig.markupPercentByPeriod[period] + '%');
+                closeModalWindow();
+            });
+        });
+    </script>
+</body>
+</html>
